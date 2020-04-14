@@ -1,10 +1,13 @@
 ﻿@page "/account/profile"
 @page "/account/profile/{UserId}"
+@using BlazorBoilerplate.Shared.Dto.Account
 @attribute [Authorize]
 
 @inject HttpClient Http
 @inject AuthenticationStateProvider authStateProvider
 @inject IMatToaster matToaster
+
+@using static Microsoft.AspNetCore.Http.StatusCodes
 
 <h1>User Profile</h1>
 <p>User profile management.</p>
@@ -104,8 +107,8 @@ else
         }
         else
         {
-            apiResponse = await Http.PostJsonAsync<ApiResponseDto>("api/Account/UserPasswordReset/" + userInfo.UserId.ToString(), registerParameters.Password);
-            if (apiResponse.StatusCode == 204 || apiResponse.StatusCode == 200)
+            apiResponse = await Http.PostJsonAsync<ApiResponseDto>($"api/Account/UserPasswordReset/{userInfo.UserId}", registerParameters.Password);
+            if (apiResponse.StatusCode == Status204NoContent || apiResponse.StatusCode == Status200OK)
             {
                 matToaster.Add("Password Reset", MatToastType.Success, apiResponse.Message);
             }
@@ -123,7 +126,7 @@ else
         {
             ApiResponseDto apiResponse = await ((IdentityAuthenticationStateProvider)authStateProvider).UpdateUser(userInfo);
 
-            if (apiResponse.StatusCode == 200)
+            if (apiResponse.StatusCode == Status200OK)
             {
                 matToaster.Add("Profile update was Successful", MatToastType.Success);
             }

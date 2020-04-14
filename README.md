@@ -3,6 +3,11 @@
 Blazor is a web framework designed to run in the browser on a WebAssembly-based .NET runtime. Blazor Boilerplate aka Blazor Starter Template is a SPA admin template that is able to BOTH (WebAssembly / Core-Hosted) and Server-Side Blazor with a .NET Core 3.1 Server. The UI for this application is by Material Design provided mostly by MatBlazor.
 Version 0.2.3 and below utilize AspNETCore Authorization / Authentication. Version 0.3.0 and up will be using Identity Server 4. Version 0.6.0 and up are capable of both CSB and SSB!    
 
+## Repository Notes
+- Read the news below to stay up to date on the repo. We will try to keep the latest major changes on a different branch and have the more stable / tested version on the master branch.
+- PWA - New branch coming soon for progressive web app with Blazor Boilerplate
+- Fluxor - Branched from version 0.6.0 with an example with [Blazor Fluxor](https://github.com/enkodellc/blazorboilerplate/tree/blazorfluxor) *Note: not really being maintained at this time
+
 [![Build Status](https://enkodellc.visualstudio.com/blazorboilerplate/_apis/build/status/enkodellc.blazorboilerplate?branchName=master)](https://enkodellc.visualstudio.com/blazorboilerplate/_build/latest?definitionId=1&branchName=master)
 [![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://blazorboilerplate.com)
 [![GitHub Stars](https://img.shields.io/github/stars/enkodellc/blazorboilerplate.svg)](https://github.com/enkodellc/blazorboilerplate/stargazers)
@@ -12,25 +17,26 @@ Version 0.2.3 and below utilize AspNETCore Authorization / Authentication. Versi
 [![Gitter](https://badges.gitter.im/BlazorBoilerplate/community.svg)](https://gitter.im/blazorboilerplate/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ## Goals
-- To create a boilerplate with Blazor / Razor components that includes the most common functionality for an app that is lean yet powerful for anyone to start a real world application quickly.
-- Avoid many external components & libraries which make it difficult to maintain, update, track down code, learn code and issues.
-- This repository is community driven. It is not and never will be controlled by a corporation.
-- Minimal Javascript. Currently only using them for SignalR for the Forum and MatBlazor / Material Desing. We may use components with JS in them but so far no Javascript has been written specifically for anything in the repository.
+- This repository is community driven. It is not and never will be controlled by a corporation. It's success is dependent on people using it, reviewing it, offering suggestions and most importantly contributing. Please join the [gitter discussion](https://gitter.im/blazorboilerplate/community) 
+- To create a boilerplate with Blazor / Razor components that includes the most common functionality to start a real world application quickly.
+- Avoid many external components & libraries which can make it difficult to maintain, update, track down code, learn code and issues.
+- Minimal Javascript. Currently only using them for SignalR for the Forum and MatBlazor / Material Design. We may use components with JS in them but so far no Javascript has been written specifically for anything in the repository.
+
 
 # Live demo
 [Blazor Boilerplate](https://blazorboilerplate.com) - Kick the tires.  *Note Firewall does block some foreign IP addresses. Swagger UI to view the server API [https://blazorboilerplate.com/swagger/index.html](https://blazorboilerplate.com/swagger/index.html).
 
 ## Prerequisites
-Don't know what Blazor is? Read [here](https://docs.microsoft.com/en-us/aspnet/core/blazor/?view=aspnetcore-3.0)
+Don't know what Blazor is? Read [here](https://docs.microsoft.com/en-us/aspnet/core/blazor)
 
 Complete all Blazor dependencies.
 
-- [.Net Core SDK 3.1.0-preview4.19579.2](https://dotnet.microsoft.com/download/dotnet-core/3.1)
-- Install the Latest Visual Studio 2019 Preview with the ASP.NET and web development workload selected.
-- Entity Framework Core on the command-line tools: **dotnet tool install --global dotnet-ef --version 3.1.1-preview4.19579.2**
+- The latest [.Net Core SDK](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+- Install the Latest Visual Studio 2019 with the ASP.NET and web development workload selected.
+- Entity Framework Core on the command-line tools: **dotnet tool install --global dotnet-ef**
 
 ### How to run
-1. Install the latest .NET Core SDK **https://dotnet.microsoft.com/download/dotnet-core/3.1** and the latest **Visual Studio 2019 (v16.4)**.
+1. Install the latest .NET Core SDK **https://dotnet.microsoft.com/download/dotnet-core/3.1** and the latest **Visual Studio 2019 (v16.6)**
 2. Clone or download.
 3. Open the solution in Visual Studio and press F5.
 4. To view the API using Swagger UI, Run the solution and go to: [http://localhost:53414/swagger/index.html](http://localhost:53414/swagger/index.html). Live example:
@@ -38,7 +44,11 @@ Complete all Blazor dependencies.
 
 ## Publish on IIS - What works for me on my Windows Server 2016 & SQL Server 2014 (Enkodellc)
 1. Publish BlazorBoilerplate.Server project to your IIS website folder using CSB or SSB.
-2. Install your SSL, use self-signed if you don't have one. Make sure your SSL is in the **WebHosting** Certificate Store.
+2. Install your SSL. Make sure your SSL is in the **WebHosting** Certificate Store.
+    - A free certificate from [Let's Encrypt](https://letsencrypt.org/) will work. 
+    - For steps 2 & 3 the utility [win-acme](https://github.com/win-acme/win-acme) installs the
+certificate on your server, performs renewal and configure your IIS Website Bindings to have https binding with the SSL certificate set and Port 443 for default.
+
 4. Configure your IIS Website Bindings to have https binding with the SSL certificate set and Port 443 for default.
 3. Configure / create appsettings.production.config. Set  Connection String, Thumbprint / SSL. Thumbprint example:  **143fbd7bc36e78b1bcf9a53c13336eaebe33353a**
 4. Login with either the user **[user | user123]** or admin **[admin | admin123]** default accounts.
@@ -50,17 +60,16 @@ Complete all Blazor dependencies.
 
 ## Contributing
 
-Please star, watch and fork! We'd greatly appreciate any contribution you make. I am very open to updates and features, though most feature requests 
-will be depending on how much community support exists.
+Please star, watch and fork! We'd greatly appreciate any contribution you make. I am very open to updates and features, though most feature requests will be depending on how much community support exists. 
 
 ## Disclaimer / About the Author
 
 I (Enkodellc) started this repository as I was frustrated with the examples out there that people were charging money for and were in my opinion
-incomplete or closed source. I paid for 4-5 of these solutions with an Angular front-end and none of them were what I was looking for. This is my
+incomplete or closed source. I paid for 4-5 of these solutions with an Angular front-end / .Net Core back-end and none of them were what I was looking for. This is my
 attempt to create something that developers can start a Blazor project with several great features to build from. 
-I have a lot of experience with ASP.Net webforms an new to .NET Core and Blazor. This code is not meant to be perfect or follow every Best Practice. 
-It though is my ambition to learn and get feedback on what Best Practices can be implemented. I will be migrating a Webforms app to Blazor so this is my 
-opportunity to learn, share, grow and get feedback on what hopefully will be a great Blazor Starter Kit.
+I have a lot of experience with ASP.Net webforms an new to .NET Core and Blazor. This code is not meant to be perfect or follow every best practice. 
+It though is my ambition to learn and get feedback on what best practices can be implemented. I will be migrating a Webforms app to Blazor so this is my 
+opportunity to learn, share, grow, and get feedback on what hopefully will be a great Blazor Starter Kit.
   
 I have taken small solutions from other repositories and will do my best to recognize those contributions. I am very open to ideas and 
  suggestions. I am not a great developer, but I try. So please take this into consideration when using this repository. If you wish to hire me for 
@@ -84,14 +93,15 @@ I have taken small solutions from other repositories and will do my best to reco
  - Drag and Drop Examples - <a href="https://chrissainty.com/investigating-drag-and-drop-with-blazor/" target="_blank">Chris Sainty Blazor Blog</a>
  - Docker Container Support
  - Dual Mode (CSB / SSB) - Client Side / Webassembly & Sever Side. Thanks [MarkStega](https://github.com/MarkStega)
-
-## Road map
-- Caching speed review
-- Security Audit
-- Add Tests
-- Azure Hosting Guide
-- Create a Nuget Package Template
+ - Error Log to Database with Serilog & SQL. Thanks [np-at](https://github.com/np-at)
+ 
+## Road map / Possible future features in no particular order
+- Multi-Tenant - This is most likely the next major revision 0.9.0 - *restructure* branch. Looks like it might be in place by end of April.
+- Caching / speed improvement? Review possible optimizations for Blazor to make sure BB is running as efficient as can be.
+- Create a Nuget Packages Template. There has been several request for BB to be broken into packages. I unfortunately do not have the resources to this at this time. There is discussions with some of the contributors to do a professional version.
 - Possibly switch from Entity Framework Core to Dapper. So far EF is not my cup of Tea. I think dapper will be stronger and faster just my opinion. I like SQL code, less automagic code with more control. Just my style.
+- Localization - Looking for any contributors who have some expertise in this. Previw 4 is tentative for .resx support.
+- Branch for [PWA  (Progressive Web App)](https://devblogs.microsoft.com/aspnet/blazor-webassembly-3-2-0-preview-2-release-now-available/) for testing & possible implementation 
 
 ## License
 This project is licensed under the terms of the [MIT license](LICENSE).
@@ -109,10 +119,10 @@ This project is licensed under the terms of the [MIT license](LICENSE).
 - If you are getting compiler errors try and close VS delete your .vs directory in the solution folder. If that doesn't work delete the solution and redownload the repo.
  
 ### Postgres Support
-Delete Existing Migrations in the BlazorBoilerplate.Server/Migrations Folder and then create your own migrations:  
-  -`dotnet ef migrations add InitialApplicationDbMigration --context ApplicationDbContext -o Migrations\ApplicationDb`  
-  -`dotnet ef migrations add InitialConfigurationDbMigration --context DbContextOptionsBuilder -o Migrations\ConfigurationDb`  
-  -`dotnet ef migrations add PersistedGrantDbContext --context PersistedGrantDbContext -o Migrations\PersistedGrantDb`  
+*Note this might be out of date.. Delete Existing Migrations in the BlazorBoilerplate.Server/Migrations Folder and then create your own migrations:  
+  -`dotnet ef --startup-project ..\BlazerBoilerplate.Server migrations add InitialApplicationDbMigration --context ApplicationDbContext -o Migrations\ApplicationDb`  
+  -`dotnet ef --startup-project ..\BlazorBoilerplate.Server\ migrations add InitialConfigurationDbMigration --context ConfigurationDbContext  -o Migrations\ConfigurationDb`  
+  -`dotnet ef --startup-project ..\BlazorBoilerplate.Server\ migrations add PersistedGrantDbContext --context PersistedGrantDbContext -o Migrations\PersistedGrantDb`  
 
 ### Docker Support
 - Prerequisite: Install [Docker Desktop](https://go.microsoft.com/fwlink/?linkid=847268) 
@@ -120,9 +130,19 @@ Delete Existing Migrations in the BlazorBoilerplate.Server/Migrations Folder and
 - [Do Docker stuff](https://docs.docker.com/v17.09/docker-for-windows/install/) - I don't have much experience with Docker.
 
 ### Azure Support
--  Looking for additional help with Azure documentation and steps.
+- [Azure Hosting Wiki](https://github.com/enkodellc/blazorboilerplate/wiki/Hosting-Blazor-boilerplate-on-Microsoft-Azure) 
+- *Note that Azure isn't as up to date with their SDK as Blazor Boilerplate so you might have to use an older version
 
 ## News
+
+### 0.8.0 Under Development (Major Project Refactor - Thanks DanielBunting)
+- Refactor Project Architecture. Thanks [DanielBunting](https://github.com/DanielBunting) 
+- Add Initial Tests. Thanks [DanielBunting](https://github.com/DanielBunting) 
+- Project Code Review. Thanks [GioviQ](https://github.com/GioviQ) 
+- Revised AuthorizationPolicyProvider. Thanks [mobinseven](https://github.com/mobinseven) 
+- Server-side Multi-Tenant V.1 (Not working / No UI) - Thanks [mobinseven](https://github.com/mobinseven) 
+- SQL Server Error Logging with Serilog Thanks [np-at](https://github.com/np-at)
+- Added Ultramapper for Dto restore / clone Thanks [GioviQ](https://github.com/GioviQ) 
 
 ### 0.7.0 (Breaking Changes)
 - .NET Core 3.2 Preview 1- Microsoft & Other Nuget package updates - Program.cs refactored for CSB

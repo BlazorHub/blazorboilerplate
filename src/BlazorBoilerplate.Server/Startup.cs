@@ -2,12 +2,10 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 using AutoMapper;
-
 #if ServerSideBlazor
 
 using BlazorBoilerplate.CommonUI;
@@ -17,7 +15,7 @@ using BlazorBoilerplate.CommonUI.States;
 
 using MatBlazor;
 
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 
 using System.Net.Http;
@@ -25,24 +23,24 @@ using System.Net.Http;
 #endif
 
 using BlazorBoilerplate.Server.Authorization;
-using BlazorBoilerplate.Server.Data;
-using BlazorBoilerplate.Server.Data.Interfaces;
-using BlazorBoilerplate.Server.Data.Mapping;
 using BlazorBoilerplate.Server.Helpers;
+using BlazorBoilerplate.Server.Managers;
 using BlazorBoilerplate.Server.Middleware;
-using BlazorBoilerplate.Server.Models;
-using BlazorBoilerplate.Server.Services;
+using BlazorBoilerplate.Shared;
 using BlazorBoilerplate.Shared.AuthorizationDefinitions;
-
+using BlazorBoilerplate.Shared.DataInterfaces;
+using BlazorBoilerplate.Shared.DataModels;
+using BlazorBoilerplate.Storage;
+using BlazorBoilerplate.Storage.Mapping;
 using IdentityServer4;
 using IdentityServer4.AccessTokenValidation;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using static Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -52,7 +50,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using Serilog;
+using System.Reflection;
+using BlazorBoilerplate.Server.Data;
+
 
 namespace BlazorBoilerplate.Server
 {
@@ -72,27 +74,29 @@ namespace BlazorBoilerplate.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            var authAuthority = Configuration["BlazorBoilerplate:IS4ApplicationUrl"].TrimEnd('/');
+
+            services.RegisterStorage(Configuration);
+            var migrationsAssembly = typeof(ApplicationDbContext).GetTypeInfo().Assembly.GetName();
+            var migrationsAssemblyName = migrationsAssembly.Name;
             var useSqlServer = Convert.ToBoolean(Configuration["BlazorBoilerplate:UseSqlServer"] ?? "false");
             var dbConnString = useSqlServer
                 ? Configuration.GetConnectionString("DefaultConnection")
                 : $"Filename={Configuration.GetConnectionString("SqlLiteConnectionFileName")}";
 
-            var authAuthority = Configuration["BlazorBoilerplate:IS4ApplicationUrl"].TrimEnd('/');
-
             void DbContextOptionsBuilder(DbContextOptionsBuilder builder)
             {
                 if (useSqlServer)
                 {
-                    builder.UseSqlServer(dbConnString, sql => sql.MigrationsAssembly(migrationsAssembly));
+                    builder.UseSqlServer(dbConnString, sql => sql.MigrationsAssembly(migrationsAssemblyName));
                 }
                 else if (Convert.ToBoolean(Configuration["BlazorBoilerplate:UsePostgresServer"] ?? "false"))
                 {
-                    builder.UseNpgsql(Configuration.GetConnectionString("PostgresConnection"), sql => sql.MigrationsAssembly(migrationsAssembly));
+                    builder.UseNpgsql(Configuration.GetConnectionString("PostgresConnection"), sql => sql.MigrationsAssembly(migrationsAssemblyName));
                 }
                 else
                 {
-                    builder.UseSqlite(dbConnString, sql => sql.MigrationsAssembly(migrationsAssembly));
+                    builder.UseSqlite(dbConnString, sql => sql.MigrationsAssembly(migrationsAssemblyName));
                 }
             }
 
@@ -107,6 +111,9 @@ namespace BlazorBoilerplate.Server
             services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>,
                 AdditionalUserClaimsPrincipalFactory>();
 
+            // cookie policy to deal with temporary browser incompatibilities
+            services.AddSameSiteCookiePolicy();
+
             // Adds IdentityServer
             var identityServerBuilder = services.AddIdentityServer(options =>
             {
@@ -116,9 +123,7 @@ namespace BlazorBoilerplate.Server
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
             })
-
-
-
+              .AddIdentityServerStores(Configuration)
               .AddConfigurationStore(options =>
               {
                   options.ConfigureDbContext = DbContextOptionsBuilder;
@@ -255,7 +260,9 @@ namespace BlazorBoilerplate.Server
                 options.AddPolicy(Policies.IsMyDomain, Policies.IsMyDomainPolicy());  // valid only on serverside operations
             });
 
+            services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
             services.AddTransient<IAuthorizationHandler, DomainRequirementHandler>();
+            services.AddTransient<IAuthorizationHandler, PermissionRequirementHandler>();
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -280,22 +287,22 @@ namespace BlazorBoilerplate.Server
                 }
             });
 
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+            //            services.Configure<CookiePolicyOptions>(options =>
+            //            {
+            //                options.MinimumSameSitePolicy = SameSiteMode.None;
+            //            });
 
-            services.ConfigureExternalCookie(options =>
-            {
-                // macOS login fix
-                options.Cookie.SameSite = SameSiteMode.None;
-            });
+            //services.ConfigureExternalCookie(options =>
+            // {
+            // macOS login fix
+            //options.Cookie.SameSite = SameSiteMode.None;
+            //});
 
             services.ConfigureApplicationCookie(options =>
             {
                 // macOS login fix
-                options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.HttpOnly = false;
+                //options.Cookie.SameSite = SameSiteMode.None;
+                //options.Cookie.HttpOnly = false;
 
                 // Suppress redirect on API URLs in ASP.NET Core -> https://stackoverflow.com/a/56384729/54159
                 options.Events = new CookieAuthenticationEvents()
@@ -304,14 +311,14 @@ namespace BlazorBoilerplate.Server
                     {
                         if (context.Request.Path.StartsWithSegments("/api"))
                         {
-                            context.Response.StatusCode = (int)(HttpStatusCode.Unauthorized);
+                            context.Response.StatusCode = Status403Forbidden;
                         }
 
                         return Task.CompletedTask;
                     },
                     OnRedirectToLogin = context =>
                     {
-                        context.Response.StatusCode = 401;
+                        context.Response.StatusCode = Status401Unauthorized;
                         return Task.CompletedTask;
                     }
                 };
@@ -324,7 +331,7 @@ namespace BlazorBoilerplate.Server
             {
                 config.PostProcess = document =>
                 {
-                    document.Info.Version = "0.7.0";
+                    document.Info.Version = migrationsAssembly.Version.ToString();
                     document.Info.Title = "Blazor Boilerplate";
 #if ServerSideBlazor
                     document.Info.Description = "Blazor Boilerplate / Starter Template using the  Server Side Version";
@@ -335,26 +342,22 @@ namespace BlazorBoilerplate.Server
                 };
             });
 
-            services.AddResponseCompression(opts =>
-            {
-                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-                    new[] { "application/octet-stream" });
-            });
-
             services.AddScoped<IUserSession, UserSession>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
 
-            services.AddTransient<IAccountService, AccountService>();
-            services.AddTransient<IEmailService, EmailService>();
-            services.AddTransient<IUserProfileService, UserProfileService>();
-            services.AddTransient<IApiLogService, ApiLogService>();
-            services.AddTransient<ITodoService, ToDoService>();
-            services.AddTransient<IMessageService, MessageService>();
+            services.AddTransient<IAccountManager, AccountManager>();
+            services.AddTransient<IAdminManager, AdminManager>();
+            services.AddTransient<IApiLogManager, ApiLogManager>();
+            services.AddTransient<IDbLogManager, DbLogManager>();
+            services.AddTransient<IEmailManager, EmailManager>();
+            services.AddTransient<IExternalAuthManager, ExternalAuthManager>(); // Currently not being used.
+            services.AddTransient<IMessageManager, MessageManager>();
+            services.AddTransient<ITodoManager, ToDoManager>();
+            services.AddTransient<IUserProfileManager, UserProfileManager>();
 
-            // DB Creation and Seeding
-            services.AddTransient<IDatabaseInitializer, DatabaseInitializer>();
+
 
             //Automapper to map DTO to Models https://www.c-sharpcorner.com/UploadFile/1492b1/crud-operations-using-automapper-in-mvc-application/
             var automapperConfig = new MapperConfiguration(configuration =>
@@ -411,6 +414,9 @@ namespace BlazorBoilerplate.Server
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // cookie policy to deal with temporary browser incompatibilities
+            app.UseCookiePolicy();
+
             EmailTemplates.Initialize(env);
 
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
@@ -418,8 +424,6 @@ namespace BlazorBoilerplate.Server
                 var databaseInitializer = serviceScope.ServiceProvider.GetService<IDatabaseInitializer>();
                 databaseInitializer.SeedAsync().Wait();
             }
-
-            app.UseResponseCompression(); // This must be before the other Middleware if that manipulates Response
 
             // A REST API global exception handler and response wrapper for a consistent API
             // Configure API Loggin in appsettings.json - Logs most API calls. Great for debugging and user activity audits
@@ -429,7 +433,7 @@ namespace BlazorBoilerplate.Server
             {
                 app.UseDeveloperExceptionPage();
 #if ClientSideBlazor
-                app.UseBlazorDebugging();
+                app.UseWebAssemblyDebugging();
 #endif
             }
             else
@@ -442,7 +446,7 @@ namespace BlazorBoilerplate.Server
             app.UseStaticFiles();
 
 #if ClientSideBlazor
-            app.UseClientSideBlazorFiles<Client.Program>();
+            app.UseBlazorFrameworkFiles();
 #endif
 
             app.UseRouting();
@@ -465,7 +469,7 @@ namespace BlazorBoilerplate.Server
                 endpoints.MapHub<Hubs.ChatHub>("/chathub");
 
 #if ClientSideBlazor
-                endpoints.MapFallbackToClientSideBlazor<Client.Program>("index_csb.html");
+                endpoints.MapFallbackToFile("index_csb.html");
 #else
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/index_ssb");

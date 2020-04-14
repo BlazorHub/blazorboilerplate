@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BlazorBoilerplate.Shared.Dto.Account;
 
 namespace BlazorBoilerplate.CommonUI.States
 {
@@ -93,7 +94,7 @@ namespace BlazorBoilerplate.CommonUI.States
                 if (userInfo.IsAuthenticated)
                 {
                     var claims = new[] { new Claim(ClaimTypes.Name, userInfo.UserName) }.Concat(userInfo.ExposedClaims.Select(c => new Claim(c.Key, c.Value)));
-                    identity = new ClaimsIdentity(claims, "Server authentication");
+                    identity = new ClaimsIdentity(claims, "Server authentication", "name", "role");
                 }
             }
             catch (HttpRequestException ex)
