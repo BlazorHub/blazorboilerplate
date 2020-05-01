@@ -5,7 +5,7 @@ Version 0.2.3 and below utilize AspNETCore Authorization / Authentication. Versi
 
 ## Repository Notes
 - Read the news below to stay up to date on the repo. We will try to keep the latest major changes on a different branch and have the more stable / tested version on the master branch.
-- PWA - New branch coming soon for progressive web app with Blazor Boilerplate
+- Development Branch is the latest dev code for future release.
 - Fluxor - Branched from version 0.6.0 with an example with [Blazor Fluxor](https://github.com/enkodellc/blazorboilerplate/tree/blazorfluxor) *Note: not really being maintained at this time
 
 [![Build Status](https://enkodellc.visualstudio.com/blazorboilerplate/_apis/build/status/enkodellc.blazorboilerplate?branchName=master)](https://enkodellc.visualstudio.com/blazorboilerplate/_build/latest?definitionId=1&branchName=master)
@@ -24,7 +24,8 @@ Version 0.2.3 and below utilize AspNETCore Authorization / Authentication. Versi
 
 
 # Live demo
-[Blazor Boilerplate](https://blazorboilerplate.com) - Kick the tires.  *Note Firewall does block some foreign IP addresses. Swagger UI to view the server API [https://blazorboilerplate.com/swagger/index.html](https://blazorboilerplate.com/swagger/index.html).
+- [Blazor Boilerplate - CSB/WASM](https://blazorboilerplate.com) - Kick the tires.  *Note Firewall does block some foreign IP addresses. Swagger UI to view the server API [https://blazorboilerplate.com/swagger/index.html](https://blazorboilerplate.com/swagger/index.html).
+- [Development Branch - SSB](https://openid.quarella.net) - The demo of the Development branch. 
 
 ## Prerequisites
 Don't know what Blazor is? Read [here](https://docs.microsoft.com/en-us/aspnet/core/blazor)
@@ -135,14 +136,24 @@ This project is licensed under the terms of the [MIT license](LICENSE).
 
 ## News
 
-### 0.8.0 Under Development (Major Project Refactor - Thanks DanielBunting)
+### 0.9.0 Under Development (Development branch Major Project Refactor - Thanks GioviQ)
+- Localization Support. Thanks [GioviQ](https://github.com/GioviQ) 
+- DotNet Template Solution. Thanks [GioviQ](https://github.com/GioviQ) 
+- Update to Identity Server. Thanks [GioviQ](https://github.com/GioviQ) 
+- [Demo for Development Branch - SSB](https://openid.quarella.net)
+
+### 0.8.1 Stable - Master branch
+- Blazor WebAssembly 3.2.0 Preview 5
+- Nuget Package updates 
+
+### 0.8.0 (Major Project Refactor - Thanks DanielBunting)
 - Refactor Project Architecture. Thanks [DanielBunting](https://github.com/DanielBunting) 
 - Add Initial Tests. Thanks [DanielBunting](https://github.com/DanielBunting) 
 - Project Code Review. Thanks [GioviQ](https://github.com/GioviQ) 
 - Revised AuthorizationPolicyProvider. Thanks [mobinseven](https://github.com/mobinseven) 
 - Server-side Multi-Tenant V.1 (Not working / No UI) - Thanks [mobinseven](https://github.com/mobinseven) 
 - SQL Server Error Logging with Serilog Thanks [np-at](https://github.com/np-at)
-- Added Ultramapper for Dto restore / clone Thanks [GioviQ](https://github.com/GioviQ) 
+- Added Ultramapper for Dto restore / clone. Thanks [GioviQ](https://github.com/GioviQ) 
 
 ### 0.7.0 (Breaking Changes)
 - .NET Core 3.2 Preview 1- Microsoft & Other Nuget package updates - Program.cs refactored for CSB
