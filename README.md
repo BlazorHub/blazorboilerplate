@@ -25,8 +25,8 @@ Version 0.2.3 and below utilize AspNETCore Authorization / Authentication. Versi
 
 # Live demo
 - [Blazor Boilerplate - CSB/WASM](https://blazorboilerplate.com) - Kick the tires.  *Note Firewall does block some foreign IP addresses. Swagger UI to view the server API [https://blazorboilerplate.com/swagger/index.html](https://blazorboilerplate.com/swagger/index.html).
-- [Demo for Development Branch - SSB](https://blazor-server.quarella.net/)
-- [Demo for Development Branch - CSB](https://blazor-wasm.quarella.net/)
+- [Demo for Development Branch - Blazor Server Side Tenant](https://blazor-server.quarella.net/)
+- [Demo for Development Branch - Blazor WebAssembly Tenant](https://blazor-wasm.quarella.net/)
 
 ## Prerequisites
 Don't know what Blazor is? Read [here](https://docs.microsoft.com/en-us/aspnet/core/blazor)
@@ -143,6 +143,12 @@ This project is licensed under the terms of the [MIT license](LICENSE).
 - Update to Identity Server. Thanks [GioviQ](https://github.com/GioviQ) 
 - [Demo for Development Branch - SSB](https://blazor-server.quarella.net/)
 - [Demo for Development Branch - CSB](https://blazor-wasm.quarella.net/)
+
+### 1.0.0 - Master branch
+- Nuget Package updates Blazor 3.2 - Production!
+
+### 0.8.2 - Master branch
+- Nuget Package updates 
 
 ### 0.8.1 Stable - Master branch
 - Blazor WebAssembly 3.2.0 Preview 5
